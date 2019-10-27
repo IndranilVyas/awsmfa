@@ -35,11 +35,10 @@ var (
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "awsmfa",
-	Short: "Manage your AWS Secruity Credentials for MFA enabled AWS API Access",
-	Long: `Manage your AWS Secruity Credentials for aws cli/api access that has MFA enabled.
-  awsmfa allows user to temporary credentials using named profile`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
+	Short: "Manage your AWS Session Credentials for IAM Roles with MFA enabled",
+	Long: `Manage your AWS Session Credentials for aws cli/api access IAM Role that has MFA enabled.
+  awsmfa will generate Session Credentials and save them in default credentials file`,
+
 	Run: func(cmd *cobra.Command, args []string) {
 		 
 
