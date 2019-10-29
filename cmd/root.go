@@ -72,8 +72,8 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 
-	rootCmd.Flags().StringVarP(&profile, "profile", "p", "", "profile name found config file (default config file is $HOME/.aws/config)")
+	rootCmd.PersistentFlags().StringVarP(&profile, "profile", "p", "default", "profile name found config file (default config file is $HOME/.aws/config)")
 	rootCmd.Flags().StringVarP(&duration, "duration", "d", "1h", "Session Duration like 1h, 2h.")
 	rootCmd.Flags().StringVarP(&token, "token", "t", "", "MFA Token for User")
-	rootCmd.MarkFlagRequired("profile")
+	// rootCmd.MarkFlagRequired("profile")
 }

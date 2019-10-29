@@ -59,9 +59,22 @@ func (sess * awsSession) Save() {
 
 }
 
+func (sess * awsSession) GetUserSession(){
+
+	var sessOpts session.Options
+	sessOpts.Profile = sess.Profile
+
+	newSession, err := session.NewSessionWithOptions(sessOpts)
+	checkErrorAndExit(err, "Failed to Created Session")
+	updateCredentialsFile(sess, newSession)
+
+
+}
+
 func updateCredentialsFile(sess *awsSession, currSession *session.Session) {
 
 	filePath := sess.HomeDir+"/.aws/credentials"
+	fmt.Printf("File Path is %s",filePath)
 	creds, err := currSession.Config.Credentials.Get()
 	checkErrorAndExit(err, "Error loading Credentials from Current Session")
 	credsFile, err := ini.Load(filePath)
