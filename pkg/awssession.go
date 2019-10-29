@@ -81,7 +81,7 @@ func updateCredentialsFile(sess *awsSession, currSession *session.Session) {
 		checkErrorAndExit(err, "Failed to add:"+awsAccessKey)
 		_, err = mfaSection.NewKey(awsSessionToken, creds.SessionToken)
 		checkErrorAndExit(err, "Failed to add:"+awsAccessKey)
-		err = credsFile.SaveTo(sess.HomeDir)
+		err = credsFile.SaveTo(filePath)
 		checkErrorAndExit(err, "Failed to Save credentials" )
 		fmt.Println("New Credentials added to Credentials File")
 	} else {
@@ -89,7 +89,7 @@ func updateCredentialsFile(sess *awsSession, currSession *session.Session) {
 		mfaSection.Key(awsAccessKey).SetValue(creds.AccessKeyID)
 		mfaSection.Key(awsSecretKey).SetValue(creds.SecretAccessKey)
 		mfaSection.Key(awsSessionToken).SetValue(creds.SessionToken)
-		credsFile.SaveTo(sess.HomeDir)
+		credsFile.SaveTo(filePath)
 		checkErrorAndExit(err, "Failed to Save credentials" )
 		fmt.Println("Credentials File updated with New Credentials")
 }
