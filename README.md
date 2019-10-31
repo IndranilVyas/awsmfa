@@ -1,18 +1,27 @@
 # awsmfa
 
-Small commandline tool to generate AWS Session Credentials for IAM Roles that require MFA.
+Small commandline tool based on spf13/Cobra cli library to generate AWS Session Credentials for IAM Roles and IAM Users that require MFA.
+
+It will by default save credentials in Users Home directory. 
 
 ## Usage
 ```
-Manage your AWS Session Credentials for aws cli/api access IAM Role that has MFA enabled.
-awsmfa will generate Session Credentials and save them in default credentials file
+Cobra cli based app to create aws session credentials , currently supports IAM roles
+configured in default (~/.aws/config)
+Also IAM User Sessiont Credentials with virtual mfa
 
 Usage:
   awsmfa [flags]
+  awsmfa [command]
+
+Available Commands:
+  help        Help about any command
+  roleSession Manage your AWS Session Credentials for IAM Roles with MFA enabled
+  userSession aws sts get-session-token implementation
 
 Flags:
-  -d, --duration string   Session Duration like 1h, 2h. (default "1h")
-  -h, --help              help for awsmfa
-  -p, --profile string    profile name found config file (default config file is $HOME/.aws/config)
-  -t, --token string      MFA Token for User
+  -h, --help   help for awsmfa
+
+Use "awsmfa [command] --help" for more information about a command.
+
   ```
