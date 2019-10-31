@@ -18,40 +18,28 @@ limitations under the License.
 
 import (
 	"fmt"
-	"github.com/IndranilVyas/awsmfa/pkg"
+
 	"github.com/spf13/cobra"
 	"os"
 
-	homedir "github.com/mitchellh/go-homedir"
+
 )
 
-var (
-	profile  string
-	duration string
-	token    string
-	err      error
-)
+var err error
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "awsmfa",
-	Short: "Manage your AWS Session Credentials for IAM Roles with MFA enabled",
-	Long: `Manage your AWS Session Credentials for aws cli/api access IAM Role that has MFA enabled.
-  awsmfa will generate Session Credentials and save them in default credentials file`,
+	Short: "Yet another aws session credentials generator using virtual mfa",
+	Long: `Cobra cli based app to create aws session credentials , currently supports IAM roles
+configured in default (~/.aws/config)
+Also IAM User Sessiont Credentials with virtual mfa`,
 
 	Run: func(cmd *cobra.Command, args []string) {
-
-		session := awssession.New()
-		session.Profile = profile
-		session.Duration = duration
-		session.Token = token
-		session.HomeDir, err = homedir.Dir()
-		if err != nil {
-			fmt.Printf("Unable get Home directory \nError: %v", err.Error())
-			os.Exit(1)
+		if len(args) == 0 {
+			cmd.Help()
+			os.Exit(0)
 		}
-		session.Save()
-
 	},
 }
 
@@ -65,14 +53,5 @@ func Execute() {
 }
 
 func init() {
-	//cobra.OnInitialize(initConfig)
 
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
-
-	rootCmd.PersistentFlags().StringVarP(&profile, "profile", "p", "default", "profile name found config file (default config file is $HOME/.aws/config)")
-	rootCmd.PersistentFlags().StringVarP(&duration, "duration", "d", "1h", "Session Duration like 1h, 2h.")
-	rootCmd.PersistentFlags().StringVarP(&token, "token", "t", "", "MFA Token for User")
-	// rootCmd.MarkFlagRequired("profile")
 }

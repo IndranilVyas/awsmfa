@@ -3,14 +3,15 @@ package awssession
 import (
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"gopkg.in/ini.v1"
 
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/defaults"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/credentials/stscreds"
+	"github.com/aws/aws-sdk-go/aws/defaults"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sts"
 )
@@ -34,21 +35,6 @@ type credentialResult struct {
 	sessionToken string
 }
 
-func (creds *credentialResult) setAssumeRoleCreds(awsCreds *credentials.Credentials) {
-
-	value, err := awsCreds.Get()
-	checkErrorAndExit(err, "Unable to retrieve Credentials")
-	creds.accessKey = value.AccessKeyID
-	creds.secretKey = value.SecretAccessKey
-	creds.sessionToken = value.SessionToken
-}
-func (creds *credentialResult) setUserSessionCreds(awsCreds *sts.Credentials) {
-	creds.accessKey = *awsCreds.AccessKeyId
-	creds.secretKey = *awsCreds.SecretAccessKey
-	creds.sessionToken = *awsCreds.SessionToken
-
-}
-
 //New create new awsSession object
 func New() *awsSession {
 	return new(awsSession)
@@ -67,9 +53,8 @@ func checkErrorAndExit(err error, message string) {
 	}
 }
 
-func (sess *awsSession) Save() {
+func (sess *awsSession) AssumeRoleFromConfig() {
 
-	var credentialsValue = &credentialResult{}
 	roleDuration, err := time.ParseDuration(sess.Duration)
 	var sessOpts session.Options
 	sessOpts.Profile = sess.Profile
@@ -81,53 +66,58 @@ func (sess *awsSession) Save() {
 	checkErrorAndExit(err, "Failed to Created Session")
 
 	creds := newSession.Config.Credentials
-	
-	credentialsValue.setAssumeRoleCreds(creds)
-	updateCredentialsFile(sess, credentialsValue)
-}
 
+	c, err := creds.Get()
+	checkErrorAndExit(err, "Unable to retrieve credentials from the session")
+	values := &credentialResult{
+		accessKey:    c.AccessKeyID,
+		secretKey:    c.SecretAccessKey,
+		sessionToken: c.SessionToken,
+	}
+
+	updateCredentialsFile(sess, values)
+}
+func generateMFASerialNumber(sess *session.Session) string {
+	svc := sts.New(sess)
+	input := &sts.GetCallerIdentityInput{}
+
+	callerInfo, err := svc.GetCallerIdentity(input)
+	checkErrorAndExit(err, "unable to retrieve Get Caller Identity")
+	arn := callerInfo.Arn
+	mfaserial := strings.ReplaceAll(*arn, "user","mfa")
+	fmt.Printf("User's MFA Serial is : %s\n", mfaserial)
+	return mfaserial
+}
 func (sess *awsSession) GetUserSession() {
 
-	//  var credentialsValue *credentialResult
 	var sessOpts session.Options
-	//sessOpts.Profile = sess.Profile
+
 	sessOpts.Config.Region = aws.String("us-east-1")
-	sessOpts.Config.Credentials = credentials.NewSharedCredentials(defaults.SharedCredentialsFilename(),sess.Profile)
+	sessOpts.Config.Credentials = credentials.NewSharedCredentials(defaults.SharedCredentialsFilename(), sess.Profile)
 	t, err := time.ParseDuration(sess.Duration)
 	seconds := t.Seconds()
-	fmt.Println(sess.Token)
+	newSession, err := session.NewSessionWithOptions(sessOpts)
+	mfaSerial := generateMFASerialNumber(newSession)
+	token, err := sess.loadToken()
+	checkErrorAndExit(err, "Token Not Found")
 	params := &sts.GetSessionTokenInput{
 		DurationSeconds: aws.Int64(int64(seconds)),
-		TokenCode: aws.String(sess.Token),
-		SerialNumber: aws.String("arn:aws:iam::016737941129:mfa/testMFA"),
+		TokenCode:       aws.String(token),
+		SerialNumber:    aws.String(mfaSerial),
 	}
-	newSession, err := session.NewSessionWithOptions(sessOpts)
+	
 	checkErrorAndExit(err, "Failed to Created Session")
 	stsSession := sts.New(newSession)
 	stsOutput, err := stsSession.GetSessionToken(params)
 	checkErrorAndExit(err, "Could Not create user session")
 
 	creds := stsOutput.Credentials
-	// fmt.Println(*creds.AccessKeyId)
-	// fmt.Println(*creds.SecretAccessKey)
-	// fmt.Println(*creds.SessionToken)
-	// valueA := *creds.AccessKeyId
-	// valueB := *creds.SecretAccessKey
-	// valueC := *creds.SessionToken
-
-	// fmt.Println(valueA)
-	// fmt.Println(valueB)
-	// fmt.Println(valueC)
 	values := &credentialResult{
-		accessKey: *creds.AccessKeyId,
-		secretKey: *creds.SecretAccessKey,
+		accessKey:    *creds.AccessKeyId,
+		secretKey:    *creds.SecretAccessKey,
 		sessionToken: *creds.SessionToken,
 	}
-	//  credentialsValue.accessKey = valueA
-	//  credentialsValue.secretKey = valueB
-	//  credentialsValue.sessionToken = valueC
-	 fmt.Println(values)
-	// credentialsValue.setUserSessionCreds(creds)
+
 	updateCredentialsFile(sess, values)
 
 }
