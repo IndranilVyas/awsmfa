@@ -40,7 +40,6 @@ var rootCmd = &cobra.Command{
   awsmfa will generate Session Credentials and save them in default credentials file`,
 
 	Run: func(cmd *cobra.Command, args []string) {
-		 
 
 		session := awssession.New()
 		session.Profile = profile
@@ -73,7 +72,7 @@ func init() {
 	// will be global for your application.
 
 	rootCmd.PersistentFlags().StringVarP(&profile, "profile", "p", "default", "profile name found config file (default config file is $HOME/.aws/config)")
-	rootCmd.Flags().StringVarP(&duration, "duration", "d", "1h", "Session Duration like 1h, 2h.")
-	rootCmd.Flags().StringVarP(&token, "token", "t", "", "MFA Token for User")
+	rootCmd.PersistentFlags().StringVarP(&duration, "duration", "d", "1h", "Session Duration like 1h, 2h.")
+	rootCmd.PersistentFlags().StringVarP(&token, "token", "t", "", "MFA Token for User")
 	// rootCmd.MarkFlagRequired("profile")
 }

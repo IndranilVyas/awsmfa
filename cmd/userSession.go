@@ -40,6 +40,8 @@ to quickly create a Cobra application.`,
 		session := awssession.New()
 		session.Profile = profile
 		session.HomeDir, err = homedir.Dir()
+		session.Duration = duration
+		session.Token = token
 		if err != nil {
 			fmt.Printf("Unable get Home directory \nError: %v", err.Error())
 			os.Exit(1)
@@ -52,5 +54,4 @@ to quickly create a Cobra application.`,
 func init() {
 	rootCmd.AddCommand(userSessionCmd)
 
-	
 }
