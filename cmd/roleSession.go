@@ -1,4 +1,5 @@
 package cmd
+
 /*
 Copyright © 2019 NAME HERE <EMAIL ADDRESS>
 
@@ -15,16 +16,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-
 import (
 	"fmt"
 	"os"
 
-	"github.com/spf13/cobra"
 	"github.com/IndranilVyas/awsmfa/pkg"
 	homedir "github.com/mitchellh/go-homedir"
+	"github.com/spf13/cobra"
 )
-
 
 // roleSessionCmd represents the roleSession command
 var roleSessionCmd = &cobra.Command{
@@ -49,7 +48,7 @@ awsmfa will generate Session Credentials and save them in default credentials fi
 
 func init() {
 	rootCmd.AddCommand(roleSessionCmd)
-	
+
 	roleSessionCmd.Flags().StringP("token", "t", "", "MFA Device Token")
 	roleSessionCmd.Flags().StringP("duration", "d", "1h", "Session Duration like 1h, 2h.")
 	roleSessionCmd.Flags().StringP("profile", "p", "default", "Profile name where IAM Role is defined")

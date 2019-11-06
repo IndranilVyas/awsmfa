@@ -37,7 +37,7 @@ var userSessionCmd = &cobra.Command{
 		session.Profile, _ = cmd.Flags().GetString("profile")
 		session.HomeDir, err = homedir.Dir()
 		session.Duration, _ = cmd.Flags().GetString("duration")
-		session.Token , _ = cmd.Flags().GetString("token")
+		session.Token, _ = cmd.Flags().GetString("token")
 		if err != nil {
 			fmt.Printf("Unable get Home directory \nError: %v", err.Error())
 			os.Exit(1)

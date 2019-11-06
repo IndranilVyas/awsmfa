@@ -84,7 +84,7 @@ func generateMFASerialNumber(sess *session.Session) string {
 	callerInfo, err := svc.GetCallerIdentity(input)
 	checkErrorAndExit(err, "unable to retrieve Get Caller Identity")
 	arn := callerInfo.Arn
-	mfaserial := strings.ReplaceAll(*arn, "user","mfa")
+	mfaserial := strings.ReplaceAll(*arn, "user", "mfa")
 	fmt.Printf("User's MFA Serial is : %s\n", mfaserial)
 	return mfaserial
 }
@@ -105,7 +105,7 @@ func (sess *awsSession) GetUserSession() {
 		TokenCode:       aws.String(token),
 		SerialNumber:    aws.String(mfaSerial),
 	}
-	
+
 	checkErrorAndExit(err, "Failed to Created Session")
 	stsSession := sts.New(newSession)
 	stsOutput, err := stsSession.GetSessionToken(params)
