@@ -23,16 +23,16 @@ const (
 )
 
 type awsSession struct {
-	Profile  string	
-	Duration string	
-	Token    string 
+	Profile  string
+	Duration string
+	Token    string
 	HomeDir  string
 }
 
 type credentialResult struct {
-	accessKey    string	`ini:"aws_access_key_id"`
+	accessKey    string `ini:"aws_access_key_id"`
 	secretKey    string `ini:"aws_secret_access_key"`
-	sessionToken string	`ini:"aws_session_token"`
+	sessionToken string `ini:"aws_session_token"`
 }
 
 //New create new awsSession object
