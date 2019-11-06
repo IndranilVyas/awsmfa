@@ -23,16 +23,16 @@ const (
 )
 
 type awsSession struct {
-	Profile  string
-	Duration string
-	Token    string
+	Profile  string	
+	Duration string	
+	Token    string 
 	HomeDir  string
 }
 
 type credentialResult struct {
-	accessKey    string
-	secretKey    string
-	sessionToken string
+	accessKey    string	`ini:"aws_access_key_id"`
+	secretKey    string `ini:"aws_secret_access_key"`
+	sessionToken string	`ini:"aws_session_token"`
 }
 
 //New create new awsSession object
@@ -125,7 +125,7 @@ func (sess *awsSession) GetUserSession() {
 func updateCredentialsFile(sess *awsSession, value *credentialResult) {
 
 	filePath := sess.HomeDir + "/.aws/credentials"
-	fmt.Printf("File Path is %s", filePath)
+	fmt.Printf("File Path is %s\n", filePath)
 	credsFile, err := ini.Load(filePath)
 	checkErrorAndExit(err, "Error Loading credentials from "+filePath)
 	mfaProfileName := sess.Profile + "_mfa"
@@ -133,24 +133,26 @@ func updateCredentialsFile(sess *awsSession, value *credentialResult) {
 	mfaSection, err := credsFile.GetSection(mfaProfileName)
 
 	if err != nil {
-		fmt.Printf("Credentils Not Found...Creating Section for %s \n", mfaProfileName)
+		// fmt.Printf("Credentils Not Found...Creating Section for %s \n", mfaProfileName)
 
-		mfaSection, err := credsFile.NewSection(mfaProfileName)
-		checkErrorAndExit(err, "Failed to Created New Section")
-		_, err = mfaSection.NewKey(awsAccessKey, value.accessKey)
-		checkErrorAndExit(err, "Failed to add:"+awsAccessKey)
-		_, err = mfaSection.NewKey(awsSecretKey, value.secretKey)
-		checkErrorAndExit(err, "Failed to add:"+awsAccessKey)
-		_, err = mfaSection.NewKey(awsSessionToken, value.sessionToken)
-		checkErrorAndExit(err, "Failed to add:"+awsAccessKey)
+		// mfaSection, err := credsFile.NewSection(mfaProfileName)
+		// checkErrorAndExit(err, "Failed to Created New Section")
+		// _, err = mfaSection.NewKey(awsAccessKey, value.accessKey)
+		// checkErrorAndExit(err, "Failed to add:"+awsAccessKey)
+		// _, err = mfaSection.NewKey(awsSecretKey, value.secretKey)
+		// checkErrorAndExit(err, "Failed to add:"+awsAccessKey)
+		// _, err = mfaSection.NewKey(awsSessionToken, value.sessionToken)
+		// checkErrorAndExit(err, "Failed to add:"+awsAccessKey)
+		mfaSection.ReflectFrom(value)
 		err = credsFile.SaveTo(filePath)
 		checkErrorAndExit(err, "Failed to Save credentials")
 		fmt.Println("New Credentials added to Credentials File")
 	} else {
 		fmt.Println("Previous Credentials Found....Updating Them")
-		mfaSection.Key(awsAccessKey).SetValue(value.accessKey)
-		mfaSection.Key(awsSecretKey).SetValue(value.secretKey)
-		mfaSection.Key(awsSessionToken).SetValue(value.sessionToken)
+		// mfaSection.Key(awsAccessKey).SetValue(value.accessKey)
+		// mfaSection.Key(awsSecretKey).SetValue(value.secretKey)
+		// mfaSection.Key(awsSessionToken).SetValue(value.sessionToken)
+		mfaSection.ReflectFrom(value)
 		credsFile.SaveTo(filePath)
 		checkErrorAndExit(err, "Failed to Save credentials")
 		fmt.Println("Credentials File updated with New Credentials")
