@@ -1,3 +1,4 @@
+[![Go Report Card](https://goreportcard.com/badge/github.com/IndranilVyas/awsmfa)](https://goreportcard.com/report/github.com/IndranilVyas/awsmfa)
 # awsmfa
 
 Small commandline tool based on spf13/Cobra cli library to generate AWS Session Credentials for IAM Roles and IAM Users that require MFA.
