@@ -16,8 +16,6 @@ import (
 	"github.com/aws/aws-sdk-go/service/sts"
 )
 
-
-
 type awsSession struct {
 	Profile  string
 	Duration string
