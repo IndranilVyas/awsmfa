@@ -16,11 +16,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/sts"
 )
 
-const (
-	awsAccessKey    string = "aws_access_key_id"
-	awsSecretKey    string = "aws_secret_access_key"
-	awsSessionToken string = "aws_session_token"
-)
+
 
 type awsSession struct {
 	Profile  string
@@ -133,25 +129,13 @@ func updateCredentialsFile(sess *awsSession, value *credentialResult) {
 	mfaSection, err := credsFile.GetSection(mfaProfileName)
 
 	if err != nil {
-		// fmt.Printf("Credentils Not Found...Creating Section for %s \n", mfaProfileName)
-
-		// mfaSection, err := credsFile.NewSection(mfaProfileName)
-		// checkErrorAndExit(err, "Failed to Created New Section")
-		// _, err = mfaSection.NewKey(awsAccessKey, value.accessKey)
-		// checkErrorAndExit(err, "Failed to add:"+awsAccessKey)
-		// _, err = mfaSection.NewKey(awsSecretKey, value.secretKey)
-		// checkErrorAndExit(err, "Failed to add:"+awsAccessKey)
-		// _, err = mfaSection.NewKey(awsSessionToken, value.sessionToken)
-		// checkErrorAndExit(err, "Failed to add:"+awsAccessKey)
+		fmt.Printf("Credentils Not Found...Creating Section for %s \n", mfaProfileName)
 		mfaSection.ReflectFrom(value)
 		err = credsFile.SaveTo(filePath)
 		checkErrorAndExit(err, "Failed to Save credentials")
 		fmt.Println("New Credentials added to Credentials File")
 	} else {
 		fmt.Println("Previous Credentials Found....Updating Them")
-		// mfaSection.Key(awsAccessKey).SetValue(value.accessKey)
-		// mfaSection.Key(awsSecretKey).SetValue(value.secretKey)
-		// mfaSection.Key(awsSessionToken).SetValue(value.sessionToken)
 		mfaSection.ReflectFrom(value)
 		credsFile.SaveTo(filePath)
 		checkErrorAndExit(err, "Failed to Save credentials")
