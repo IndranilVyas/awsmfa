@@ -27,7 +27,7 @@ import (
 
 // roleSessionCmd represents the roleSession command
 var roleSessionCmd = &cobra.Command{
-	Use:   "roleSession",
+	Use:   "role",
 	Short: "Manage your AWS Session Credentials for IAM Roles with MFA enabled",
 	Long: `Manage your AWS Session Credentials for aws cli/api access IAM Role that has MFA enabled.
 awsmfa will generate Session Credentials and save them in default credentials file`,

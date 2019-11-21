@@ -28,7 +28,7 @@ import (
 
 // userSessionCmd represents the userSession command
 var userSessionCmd = &cobra.Command{
-	Use:   "userSession",
+	Use:   "user",
 	Short: "aws sts get-session-token implementation",
 	Long: `This command calls aws sts get-session token and saves output to default
 ~/.aws/credentials file`,
