@@ -68,6 +68,7 @@ func (sess *awsSession) AssumeRoleFromConfig() {
 		secretKey:    c.SecretAccessKey,
 		sessionToken: c.SessionToken,
 	}
+	
 
 	updateCredentialsFile(sess, values)
 }
@@ -124,20 +125,26 @@ func updateCredentialsFile(sess *awsSession, value *credentialResult) {
 	checkErrorAndExit(err, "Error Loading credentials from "+filePath)
 	mfaProfileName := sess.Profile + "_mfa"
 
-	mfaSection, err := credsFile.GetSection(mfaProfileName)
+	section, err := credsFile.GetSection(mfaProfileName)
 
 	if err != nil {
 		fmt.Printf("Credentils Not Found...Creating Section for %s \n", mfaProfileName)
-		mfaSection.ReflectFrom(value)
-		err = credsFile.SaveTo(filePath)
-		checkErrorAndExit(err, "Failed to Save credentials")
-		fmt.Println("New Credentials added to Credentials File")
-	} else {
+		section, err = credsFile.NewSection(mfaProfileName)
+		checkErrorAndExit(err, "Unable to create new section for "+mfaProfileName)
+		section.NewKey("aws_access_key_id", value.accessKey)
+		section.NewKey("aws_secret_access_key", value.secretKey)
+		section.NewKey("aws_session_token", value.sessionToken)
+		
+	}else {
 		fmt.Println("Previous Credentials Found....Updating Them")
-		mfaSection.ReflectFrom(value)
-		credsFile.SaveTo(filePath)
-		checkErrorAndExit(err, "Failed to Save credentials")
-		fmt.Println("Credentials File updated with New Credentials")
 	}
+	// err = mfaSection.ReflectFrom(value)
+	// checkErrorAndExit(err, "Unable write credentials")
+	section.Key("aws_access_key_id").SetValue(value.accessKey)
+	section.Key("aws_secret_access_key").SetValue(value.secretKey)
+	section.Key("aws_session_token").SetValue(value.sessionToken)
+	err = credsFile.SaveTo(filePath)
+	checkErrorAndExit(err, "Failed to Save credentials")
+	fmt.Println("Credentials File updated with New Credentials")
 
 }
