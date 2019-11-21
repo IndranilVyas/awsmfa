@@ -2,6 +2,7 @@ package awssession
 
 import (
 	"fmt"
+	"runtime"
 	"os"
 	"strings"
 	"time"
@@ -71,6 +72,7 @@ func (sess *awsSession) AssumeRoleFromConfig() {
 	
 
 	updateCredentialsFile(sess, values)
+	export(values)
 }
 func generateMFASerialNumber(sess *session.Session) string {
 	svc := sts.New(sess)
@@ -114,6 +116,7 @@ func (sess *awsSession) GetUserSession() {
 	}
 
 	updateCredentialsFile(sess, values)
+	export(values)
 
 }
 
@@ -147,4 +150,36 @@ func updateCredentialsFile(sess *awsSession, value *credentialResult) {
 	checkErrorAndExit(err, "Failed to Save credentials")
 	fmt.Println("Credentials File updated with New Credentials")
 
+}
+
+func export (value *credentialResult){
+	
+	format := "bash"
+	if runtime.GOOS == "windows"{
+		format = "cmd &  pwshell"
+	}
+	
+	switch format {
+	case "bash":
+		fmt.Printf("AWS_ACCESS_KEY_ID=%s\n", value.accessKey)
+		fmt.Printf("AWS_SECRET_ACCESS_KEY=%s\n", value.secretKey)
+		fmt.Printf("AWS_SESSION_TOKEN=%s\n", value.sessionToken)
+		
+	case "cmd":
+		fmt.Println("Windows Command Prompt Style")
+		fmt.Printf("setx AWS_ACCESS_KEY_ID=\"%s\";", value.accessKey)
+		fmt.Printf("setx AWS_SECRET_ACCESS_KEY=\"%s\";", value.secretKey)
+		fmt.Printf("setx AWS_SESSION_TOKEN=\"%s\";", value.sessionToken)
+		fmt.Println("Windows PowerShell Export Style")
+		fmt.Printf("[Environment]::SetEnvironmentVariable(\"AWS_ACCESS_KEY_ID\", \"%s\", \"User\");", value.accessKey)
+		fmt.Printf("[Environment]::SetEnvironmentVariable(\"AWS_SECRET_ACCESS_KEY\", \"%s\", \"User\");", value.secretKey)
+		fmt.Printf("[Environment]::SetEnvironmentVariable(\"AWS_SESSION_TOKEN\", \"%s\", \"User\");", value.sessionToken)
+		
+	case "pwshell":
+
+		
+	default:
+		fmt.Printf("%s is an unrecognized option", format)
+	}
+	
 }
