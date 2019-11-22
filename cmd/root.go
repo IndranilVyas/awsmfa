@@ -31,7 +31,7 @@ var rootCmd = &cobra.Command{
 	Short: "Yet another aws session credentials generator using virtual mfa",
 	Long: `Cobra cli based app to create aws session credentials , currently supports IAM roles
 configured in default (~/.aws/config)
-Also IAM User Sessiont Credentials with virtual mfa`,
+Also IAM User Session Credentials with virtual mfa`,
 
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) == 0 {
