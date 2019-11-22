@@ -9,7 +9,7 @@ It will by default save credentials in Users Home directory.
 ```
 Cobra cli based app to create aws session credentials , currently supports IAM roles
 configured in default (~/.aws/config)
-Also IAM User Sessiont Credentials with virtual mfa
+Also IAM User Session Credentials with virtual mfa
 
 Usage:
   awsmfa [flags]
@@ -17,8 +17,8 @@ Usage:
 
 Available Commands:
   help        Help about any command
-  roleSession Manage your AWS Session Credentials for IAM Roles with MFA enabled
-  userSession aws sts get-session-token implementation
+  role        Manage your AWS Session Credentials for IAM Roles with MFA enabled
+  user        aws sts get-session-token implementation
 
 Flags:
   -h, --help   help for awsmfa
