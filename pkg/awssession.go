@@ -122,7 +122,6 @@ func (sess *awsSession) GetUserSession() {
 func updateCredentialsFile(sess *awsSession, value *credentialResult) {
 
 	filePath := sess.HomeDir + "/.aws/credentials"
-	fmt.Printf("File Path is %s\n", filePath)
 	credsFile, err := ini.Load(filePath)
 	checkErrorAndExit(err, "Error Loading credentials from "+filePath)
 	mfaProfileName := sess.Profile + "_mfa"
