@@ -117,7 +117,6 @@ func (sess *awsSession) GetUserSession() {
 
 	updateCredentialsFile(sess, values)
 	export(values)
-
 }
 
 func updateCredentialsFile(sess *awsSession, value *credentialResult) {
@@ -131,24 +130,19 @@ func updateCredentialsFile(sess *awsSession, value *credentialResult) {
 	section, err := credsFile.GetSection(mfaProfileName)
 
 	if err != nil {
-		fmt.Printf("Credentils Not Found...Creating Section for %s \n", mfaProfileName)
 		section, err = credsFile.NewSection(mfaProfileName)
 		checkErrorAndExit(err, "Unable to create new section for "+mfaProfileName)
 		section.NewKey("aws_access_key_id", value.accessKey)
 		section.NewKey("aws_secret_access_key", value.secretKey)
 		section.NewKey("aws_session_token", value.sessionToken)
 		
-	}else {
-		fmt.Println("Previous Credentials Found....Updating Them")
 	}
-	// err = mfaSection.ReflectFrom(value)
-	// checkErrorAndExit(err, "Unable write credentials")
 	section.Key("aws_access_key_id").SetValue(value.accessKey)
 	section.Key("aws_secret_access_key").SetValue(value.secretKey)
 	section.Key("aws_session_token").SetValue(value.sessionToken)
 	err = credsFile.SaveTo(filePath)
 	checkErrorAndExit(err, "Failed to Save credentials")
-	fmt.Println("Credentials File updated with New Credentials")
+	fmt.Printf("Temporary Credentials for Profile:%s\n",mfaProfileName)
 
 }
 
@@ -156,27 +150,32 @@ func export (value *credentialResult){
 	
 	format := "bash"
 	if runtime.GOOS == "windows"{
-		format = "cmd &  pwshell"
+		format = "cmdpwshell"
 	}
 	
 	switch format {
 	case "bash":
+		
 		fmt.Printf("AWS_ACCESS_KEY_ID=%s\n", value.accessKey)
 		fmt.Printf("AWS_SECRET_ACCESS_KEY=%s\n", value.secretKey)
 		fmt.Printf("AWS_SESSION_TOKEN=%s\n", value.sessionToken)
+		fmt.Println("Run below in Terminal")
+		fmt.Printf("export AWS_ACCESS_KEY_ID=%s\n", value.accessKey)
+		fmt.Printf("export AWS_SECRET_ACCESS_KEY=%s\n", value.secretKey)
+		fmt.Printf("export AWS_SESSION_TOKEN=%s\n", value.sessionToken)
 		
-	case "cmd":
-		fmt.Println("Windows Command Prompt Style")
+	case "cmdpwshell":
+		fmt.Printf("AWS_ACCESS_KEY_ID=\"%s\";", value.accessKey)
+		fmt.Printf("AWS_SECRET_ACCESS_KEY=\"%s\";", value.secretKey)
+		fmt.Printf("AWS_SESSION_TOKEN=\"%s\";", value.sessionToken)
+		fmt.Println("Run below Windows Command Prompt")
 		fmt.Printf("setx AWS_ACCESS_KEY_ID=\"%s\";", value.accessKey)
 		fmt.Printf("setx AWS_SECRET_ACCESS_KEY=\"%s\";", value.secretKey)
 		fmt.Printf("setx AWS_SESSION_TOKEN=\"%s\";", value.sessionToken)
-		fmt.Println("Windows PowerShell Export Style")
+		fmt.Println("Run below Windows PowerShell")
 		fmt.Printf("[Environment]::SetEnvironmentVariable(\"AWS_ACCESS_KEY_ID\", \"%s\", \"User\");", value.accessKey)
 		fmt.Printf("[Environment]::SetEnvironmentVariable(\"AWS_SECRET_ACCESS_KEY\", \"%s\", \"User\");", value.secretKey)
-		fmt.Printf("[Environment]::SetEnvironmentVariable(\"AWS_SESSION_TOKEN\", \"%s\", \"User\");", value.sessionToken)
-		
-	case "pwshell":
-
+		fmt.Printf("[Environment]::SetEnvironmentVariable(\"AWS_SESSION_TOKEN\", \"%s\", \"User\");", value.sessionToken)	
 		
 	default:
 		fmt.Printf("%s is an unrecognized option", format)
