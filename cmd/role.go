@@ -37,6 +37,7 @@ awsmfa will generate Session Credentials and save them in default credentials fi
 		session.Duration, _ = cmd.Flags().GetString("duration")
 		session.Token, _ = cmd.Flags().GetString("token")
 		session.HomeDir, err = homedir.Dir()
+		session.Eval, _ = cmd.Flags().GetBool("eval")
 		if err != nil {
 			fmt.Printf("Unable get Home directory \nError: %v", err.Error())
 			os.Exit(1)
@@ -52,4 +53,5 @@ func init() {
 	roleSessionCmd.Flags().StringP("token", "t", "", "MFA Device Token")
 	roleSessionCmd.Flags().StringP("duration", "d", "1h", "Session Duration like 1h, 2h.")
 	roleSessionCmd.Flags().StringP("profile", "p", "default", "Profile name where IAM Role is defined")
+	userSessionCmd.Flags().BoolP("eval","e",false,"eval Mode for Session Credentials deafult is true")	
 }

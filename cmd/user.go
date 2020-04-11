@@ -38,6 +38,7 @@ var userSessionCmd = &cobra.Command{
 		session.HomeDir, err = homedir.Dir()
 		session.Duration, _ = cmd.Flags().GetString("duration")
 		session.Token, _ = cmd.Flags().GetString("token")
+		session.Eval, _ = cmd.Flags().GetBool("eval")
 		if err != nil {
 			fmt.Printf("Unable get Home directory \nError: %v", err.Error())
 			os.Exit(1)
@@ -52,5 +53,6 @@ func init() {
 	userSessionCmd.Flags().StringP("token", "t", "", "MFA Device Token")
 	userSessionCmd.Flags().StringP("duration", "d", "1h", "Session Duration like 1h, 2h.")
 	userSessionCmd.Flags().StringP("profile", "p", "default", "Profile name where IAM USER is defined")
+	userSessionCmd.Flags().BoolP("eval","e",false,"eval Mode for Session Credentials deafult is true")
 
 }
