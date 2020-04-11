@@ -53,5 +53,5 @@ func init() {
 	roleSessionCmd.Flags().StringP("token", "t", "", "MFA Device Token")
 	roleSessionCmd.Flags().StringP("duration", "d", "1h", "Session Duration like 1h, 2h.")
 	roleSessionCmd.Flags().StringP("profile", "p", "default", "Profile name where IAM Role is defined")
-	userSessionCmd.Flags().BoolP("eval","e",false,"eval Mode for Session Credentials deafult is true")	
+	roleSessionCmd.Flags().BoolP("eval","e",false,"eval Mode for Session Credentials deafult is true")	
 }
